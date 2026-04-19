@@ -1,0 +1,16 @@
+# Sanal Ortam
+.venv/
+__pycache__/
+
+# Yapay Zeka Modelleri
+BERTurk-Legal_FULL_seed42_ep2_msl192/
+*.safetensors
+*.bin
+
+# Çevresel Değişkenler
+.env
+
+# Ham veri klasörü
+json_dosyalari/
+
+*.tmp
