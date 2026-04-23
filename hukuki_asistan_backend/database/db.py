@@ -8,6 +8,8 @@ Both the ETL pipeline and the Flask app import from here.
 """
 
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -15,6 +17,12 @@ from sqlalchemy.orm import Session, sessionmaker
 # ─────────────────────────────────────────────────────────────────────────────
 # Connection URI — format: postgresql://user:password@host/database_name
 # ─────────────────────────────────────────────────────────────────────────────
+
+# This file lives at  hukuki_asistan_backend/database/db.py
+# The .env file lives at hukuki_asistan_backend/.env  (one level up)
+_ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=_ENV_FILE)
+
 DATABASE_URI = os.environ.get("DATABASE_URI")
 
 if not DATABASE_URI:
