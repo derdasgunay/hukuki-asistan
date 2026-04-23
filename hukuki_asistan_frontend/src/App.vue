@@ -1,9 +1,16 @@
+```html
 <script setup>
 import { ref } from 'vue'
 
 const searchQuery = ref('')
 const results = ref([])
 const isSearching = ref(false)
+const filtersEnabled = false 
+// --- YENİ: Modüler Filtre Deposu ---
+const activeFilters = ref({
+  konu: ''
+})
+const staticKonular = ['Tazminat', 'Alacak', 'Fikri Haklar', 'İş Hukuku', 'Ticari Davalar']
 
 // Modal için gerekli değişkenler
 const isModalOpen = ref(false)
@@ -12,7 +19,19 @@ const selectedKarar = ref(null)
 const handleSearch = async () => {
   isSearching.value = true
   try {
-    const response = await fetch(`http://127.0.0.1:5000/api/search?q=${searchQuery.value}`)
+    const url = new URL('http://127.0.0.1:5000/api/search')
+    
+    if (searchQuery.value) {
+      url.searchParams.append('q', searchQuery.value)
+    }
+
+    Object.entries(activeFilters.value).forEach(([key, value]) => {
+      if (value) {
+        url.searchParams.append(key, value)
+      }
+    })
+
+    const response = await fetch(url)
     const data = await response.json()
     results.value = data
   } catch (error) {
@@ -23,13 +42,22 @@ const handleSearch = async () => {
   }
 }
 
+// --- YENİ: Dinamik Filtreleme Fonksiyonu ---
+const toggleFilter = (filterKey, value) => {
+  if (activeFilters.value[filterKey] === value) {
+    activeFilters.value[filterKey] = '' // Zaten seçiliyse iptal et
+  } else {
+    activeFilters.value[filterKey] = value // Değilse seç
+  }
+  handleSearch() // Seçim değişince aramayı tetikle
+}
+
 // Detay butonuna basınca çalışacak fonksiyon
 const openModal = (karar) => {
   selectedKarar.value = karar
   isModalOpen.value = true
 }
 
-// Çarpı butonuna basınca veya dışarı tıklayınca çalışacak fonksiyon
 const closeModal = () => {
   isModalOpen.value = false
   selectedKarar.value = null
@@ -40,7 +68,11 @@ const closeModal = () => {
   <div class="min-h-screen bg-slate-50 text-slate-900 font-sans relative">
     
     <header class="p-6 border-b bg-white flex justify-between items-center shadow-sm">
-      <h1 class="text-2xl font-bold text-law-blue tracking-tight">Lawbridge <span class="text-sm font-normal text-slate-500">v2.0</span></h1>
+      <div class="flex items-center gap-3">
+        <img src="./assets/logo.png" alt="hukuki_asistan Logo" class="h-10 w-auto object-contain" />
+        <h1 class="text-2xl font-bold text-law-blue tracking-tight">Hukuki Asistan<span class="text-sm font-normal text-slate-500"></span></h1>
+      </div>
+
       <div class="space-x-4">
         <button class="text-slate-600 hover:text-law-blue font-medium transition-colors">Geçmiş</button>
         <button class="bg-law-blue text-white px-5 py-2 rounded-lg shadow-md hover:bg-slate-800 transition-all font-medium">Giriş Yap</button>
@@ -70,6 +102,30 @@ const closeModal = () => {
         </button>
       </div>
 
+      <div v-if="filtersEnabled" class="flex flex-wrap justify-center gap-2 mt-4">
+        <button 
+          v-for="konu in staticKonular" 
+          :key="konu"
+          @click="toggleFilter('konu', konu)"
+          :class="[
+            'px-4 py-1.5 rounded-full text-sm font-medium transition-all border',
+            activeFilters.konu === konu 
+              ? 'bg-law-blue text-white border-law-blue shadow-md scale-105' 
+              : 'bg-white text-slate-600 border-slate-200 hover:border-law-blue/30 hover:bg-slate-50'
+          ]"
+        >
+          {{ konu }}
+        </button>
+
+        <button 
+          v-if="activeFilters.konu" 
+          @click="toggleFilter('konu', activeFilters.konu)"
+          class="text-xs text-red-500 hover:underline ml-2"
+        >
+          Filtreyi Kaldır
+        </button>
+      </div>
+      
       <div v-if="results.length > 0" class="mt-12 space-y-6">
         <h3 class="text-slate-500 font-medium mb-4">{{ results.length }} sonuç bulundu</h3>
         
@@ -143,3 +199,4 @@ const closeModal = () => {
 
   </div>
 </template>
+```

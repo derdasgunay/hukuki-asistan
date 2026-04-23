@@ -1,16 +1,18 @@
 # Sanal Ortam
 .venv/
 __pycache__/
+.pytest_cache/
 
 # Yapay Zeka Modelleri
 BERTurk-Legal_FULL_seed42_ep2_msl192/
 *.safetensors
 *.bin
 
-# Çevresel Değişkenler
+# Çevresel Değişkenler ve Şifreler
 .env
 
-# Ham veri klasörü
+# Ham Veriler ve Loglar
 json_dosyalari/
-
+etl_errors.log
 *.tmp
+*.log

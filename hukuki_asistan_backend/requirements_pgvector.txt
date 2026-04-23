@@ -1,0 +1,14 @@
+# New dependencies required for the PostgreSQL + pgvector migration.
+# Install these alongside the existing requirements.txt:
+#   pip install -r requirements_pgvector.txt
+#
+# Also required at the OS level (run once as root):
+#   sudo apt install postgresql-16-pgvector
+#   (Replace '16' with your PostgreSQL version: psql --version)
+
+pgvector>=0.3.6        # PostgreSQL vector type for SQLAlchemy + pgvector operators
+SQLAlchemy>=2.0.0      # ORM with 2.0-style select()/execute() API
+psycopg2-binary>=2.9.0 # PostgreSQL driver for Python (binary = no C compiler needed)
+pytest>=8.0.0          # Test runner
+pytest-mock>=3.14.0    # MagicMock integration for pytest fixtures
+python-dotenv>=1.2.2   # Environment variable management
